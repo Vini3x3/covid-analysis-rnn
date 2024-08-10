@@ -32,7 +32,7 @@ output_dim = 1
 model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
-num_epochs = 1000
+num_epochs = 1_000
 loss_fn = torch.nn.MSELoss()
 optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
 model.train()
