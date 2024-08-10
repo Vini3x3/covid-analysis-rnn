@@ -13,7 +13,7 @@ from torch import nn
 def stocks_data(symbols, dates):
     _df = pd.DataFrame(index=dates)
     for symbol in symbols:
-        df_temp = pd.read_csv("data/archive/Stocks/{}.us.txt".format(symbol), index_col='Date',
+        df_temp = pd.read_csv("data/finance/Stocks/{}.us.txt".format(symbol), index_col='Date',
                               parse_dates=True, usecols=['Date', 'Close'], na_values=['nan'])
         df_temp = df_temp.rename(columns={'Close': symbol})
         _df = _df.join(df_temp)
@@ -29,7 +29,7 @@ print(df.head())
 
 dates = pd.date_range('2010-01-02', '2017-10-11', freq='B')
 df1 = pd.DataFrame(index=dates)
-df_ibm = pd.read_csv("data/archive/Stocks/ibm.us.txt", parse_dates=True, index_col=0)
+df_ibm = pd.read_csv("data/finance/Stocks/ibm.us.txt", parse_dates=True, index_col=0)
 df_ibm = df1.join(df_ibm)
 
 df_ibm = df_ibm[['Close']]
