@@ -15,8 +15,8 @@ def get_date_count(df: pd.DataFrame, col: str) -> pd.DataFrame:
     return pd.DataFrame({col: agg_series.index, 'count': agg_series.values})
 
 
-df_infected = pd.read_csv("data/covid/covid_hk_std.csv")
-df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], dayfirst=True)  # convert to datetime type
+df_infected = pd.read_csv("data/covid/covid_hk_case_std.csv")
+df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], format='%Y%m%d')  # convert to datetime type
 print(df_infected.shape)
 
 df_count = get_date_count(df_infected, 'report_date')
