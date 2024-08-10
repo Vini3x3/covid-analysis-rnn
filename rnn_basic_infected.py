@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 
-from loader.DataTransformer import delay_list
+from loader.DataTransformer import lag_list
 from model.LstmModel import LstmModel
 
 
@@ -24,7 +24,7 @@ print(df_count.head())
 print(df_count.shape)
 
 sequence = df_count['count'].to_numpy().reshape(-1, 1)
-shifted_sequence = delay_list(sequence, 16)  # shift into delayed sequences
+shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element

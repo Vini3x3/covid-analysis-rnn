@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def delay_list(sequences: np.ndarray, period: int) -> np.ndarray:
+def lag_list(sequences: np.ndarray, period: int) -> np.ndarray:
     """
     Transform 2D sequence to a list of 2D delayed list
     :param sequences: input 2D sequence

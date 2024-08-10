@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from loader.DataTransformer import delay_list
+from loader.DataTransformer import lag_list
 from model.LstmModel import LstmModel
 
 """
@@ -13,7 +13,7 @@ e.g. given [3,4,5] it can predict 6
 # prepare data
 sequence = list(range(10))
 reshaped_sequence = np.array(sequence).reshape(-1, 1)  # reshape into individual list
-shifted_sequence = delay_list(reshaped_sequence, 4)  # shift into delayed sequences
+shifted_sequence = lag_list(reshaped_sequence, 4)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element
