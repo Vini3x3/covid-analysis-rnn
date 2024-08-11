@@ -11,7 +11,7 @@ e.g. given [3,4,5] and [6,7,8], it can predict 3*6+4*7+5*8=86
 
 # prepare data
 
-num_samples = 100
+num_samples = 200
 seq_length = 5
 
 x1 = np.random.uniform(0, 1, (num_samples, seq_length))
@@ -32,9 +32,9 @@ output_dim = 1
 model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
-num_epochs = 1_000
+num_epochs = 2_000
 loss_fn = torch.nn.MSELoss()
-optimiser = torch.optim.Adam(model.parameters(), lr=0.007)
+optimiser = torch.optim.Adam(model.parameters(), lr=0.005)
 model.train()
 for epoch in range(1, num_epochs + 1):
     y_pred = model(X_train)
