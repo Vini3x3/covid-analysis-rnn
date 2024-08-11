@@ -30,7 +30,7 @@ output_dim = 1
 model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
-num_epochs = 500
+num_epochs = 300
 loss_fn = torch.nn.MSELoss()
 optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
 model.train()
@@ -51,6 +51,24 @@ y_pred = y_pred.reshape(-1)  # reshape back to normal list
 print("sample prediction:  ", y_pred)
 print("sample true result: ", [3, 4, 5, 6, 7, 8, 9])
 
-# verify
 y_pred_round = [round(p) for p in y_pred]
 assert (y_pred_round == [3, 4, 5, 6, 7, 8, 9])
+
+# verify
+sample_sequence = [1.5, 2.5, 3.5]
+sample_answer = 4.5
+
+sample_input = np.array(sample_sequence).reshape(-1, 1)
+sample_input = lag_list(sample_input, len(sample_sequence))
+sample_input = torch.from_numpy(sample_input).type(torch.Tensor)
+
+sample_pred = model(sample_input)
+
+sample_pred = sample_pred.detach().numpy()  # revert from tensor
+sample_pred = sample_pred.reshape(-1)  # reshape back to normal list
+sample_pred = sample_pred[0]  # extract only element
+
+print("verify input: ", sample_sequence)
+print("verify prediction:  ", sample_pred)
+print("verify true result: ", sample_answer)
+assert (round(sample_pred, 1) == sample_answer)
