@@ -23,7 +23,8 @@ df_count = get_date_count(df_infected, 'report_date')
 print(df_count.head())
 print(df_count.shape)
 
-sequence = df_count['count'].to_numpy().reshape(-1, 1)
+sequence = df_count['count'].to_numpy()
+sequence = sequence.reshape(-1, 1)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
