@@ -1,12 +1,12 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 import torch
 
-from loader.DataTransformer import lag_list
+from loader.DataTransformer import lag_list, moving_average
 from model.LstmModel import LstmModel
 
 # script parameter
-# MA, D1 or default no change
+# MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
 MODE = 'MA'
 
 
@@ -19,15 +19,17 @@ def get_date_count(df: pd.DataFrame, col: str) -> pd.DataFrame:
     agg_series = agg_series.reindex(date_idx, fill_value=0)
     return pd.DataFrame({col: agg_series.index, 'count': agg_series.values})
 
+
 def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray:
     if mode == 'MA':
-        window = 14
-        kernel = np.ones(window) / window
-        return np.convolve(input_sequence, kernel, mode='valid')
+        return moving_average(input_sequence, 14)
+    elif mode == 'DMA':
+        return moving_average(input_sequence, 14, 0.95)
     elif mode == 'D1':
         return np.diff(input_sequence)
     else:
         return input_sequence
+
 
 df_infected = pd.read_csv("data/covid/covid_hk_case_std.csv")
 df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], format='%Y%m%d')  # convert to datetime type
@@ -57,7 +59,7 @@ output_dim = 1
 model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
-num_epochs = 1_000
+num_epochs = 3_000
 loss_fn = torch.nn.MSELoss()
 optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
 model.train()
@@ -79,7 +81,6 @@ print("sample prediction:  ", y_pred)
 
 y_train_sample = y_train[:5].detach().numpy().reshape(-1)
 print("sample true result: ", y_train_sample)
-
 
 # verify
 y_pred_round = [round(p) for p in y_pred]

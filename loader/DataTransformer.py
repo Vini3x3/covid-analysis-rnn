@@ -13,3 +13,8 @@ def lag_list(sequences: np.ndarray, period: int) -> np.ndarray:
     return np.array([sequences[i:i + period] for i in range(len(sequences) - period + 1)])
 
 
+def moving_average(data: np.ndarray, window_size: int, alpha: float = 1.0):
+    kernel = alpha ** np.arange(window_size - 1, -1, -1)
+    kernel = kernel / sum(kernel)
+    return np.convolve(data, kernel, mode='valid')
+
