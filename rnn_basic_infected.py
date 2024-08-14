@@ -2,19 +2,20 @@ import pandas as pd
 import torch
 
 from lib.covid_module import get_date_count
+from loader.DataLoader import read_sequence
 from loader.DataTransformer import lag_list
 from model.LstmModel import LstmModel
 
 # prepare data
-df_infected = pd.read_csv("data/covid/covid_hk_case_std.csv")
-df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], format='%Y%m%d')  # convert to datetime type
-print(df_infected.shape)
+# df_infected = pd.read_csv("data/covid/covid_hk_case_std.csv")
+# df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], format='%Y%m%d')  # convert to datetime type
+# print(df_infected.shape)
+#
+# df_count = get_date_count(df_infected, 'report_date', '%Y%m%d')
+# print(df_count.head())
+# print(df_count.shape)
 
-df_count = get_date_count(df_infected, 'report_date', '%Y%m%d')
-print(df_count.head())
-print(df_count.shape)
-
-sequence = df_count['count'].to_numpy()
+sequence = read_sequence('infected')
 sequence = sequence.reshape(-1, 1)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
