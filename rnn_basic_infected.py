@@ -1,25 +1,16 @@
 import pandas as pd
 import torch
 
+from lib.covid_module import get_date_count
 from loader.DataTransformer import lag_list
 from model.LstmModel import LstmModel
 
-
 # prepare data
-def get_date_count(df: pd.DataFrame, col: str) -> pd.DataFrame:
-    agg_df = df.groupby(col)[col].count()
-    date_idx = pd.date_range(agg_df.index.min(), agg_df.index.max())
-    agg_series = pd.Series(agg_df)
-    agg_series.index = pd.DatetimeIndex(agg_series.index)
-    agg_series = agg_series.reindex(date_idx, fill_value=0)
-    return pd.DataFrame({col: agg_series.index, 'count': agg_series.values})
-
-
 df_infected = pd.read_csv("data/covid/covid_hk_case_std.csv")
 df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], format='%Y%m%d')  # convert to datetime type
 print(df_infected.shape)
 
-df_count = get_date_count(df_infected, 'report_date')
+df_count = get_date_count(df_infected, 'report_date', '%Y%m%d')
 print(df_count.head())
 print(df_count.shape)
 
