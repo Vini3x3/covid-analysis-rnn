@@ -15,7 +15,7 @@ from model.LstmModel import LstmModel
 # print(df_count.head())
 # print(df_count.shape)
 
-sequence = read_sequence('infected')
+sequence = read_sequence('case')
 sequence = sequence.reshape(-1, 1)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 

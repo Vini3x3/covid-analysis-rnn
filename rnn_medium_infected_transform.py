@@ -32,7 +32,7 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
 # print(df_count.head())
 # print(df_count.shape)
 
-sequence = read_sequence('infected')
+sequence = read_sequence('case')
 sequence = transform_sequence(sequence, MODE)
 sequence = sequence.reshape(-1, 1)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
