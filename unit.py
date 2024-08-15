@@ -1,5 +1,6 @@
 import numpy as np
 
+from loader.DataLoader import read_dataframe
 from loader.DataTransformer import lag_list, moving_average
 
 
@@ -21,6 +22,13 @@ def t2_ma():
 
     assert (output_arr_1 == output_arr_2).all()
 
+def t3_read_dataframe():
+    df_temp = read_dataframe('temp')
+    assert (list(df_temp.columns) == [
+        'report_date', 'report_year', 'report_month', 'report_day', 'avg_temp', 'min_temp', 'max_temp'
+    ])
+
 if __name__ == '__main__':
     t1_delay_happy()
     t2_ma()
+    t3_read_dataframe()

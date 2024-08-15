@@ -8,7 +8,15 @@ def read_dataframe(name: str) -> pd.DataFrame:
     if name == 'case':
         df_case = pd.read_csv("data/covid/covid_hk_case_std.csv")
         df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
-        return df_case    
+        return df_case
+    elif name == 'temp':
+        df_temp = pd.read_csv("data/covid/hk_daily_temp_std.csv")
+        df_temp['report_date'] = pd.to_datetime(df_temp['report_date'], format='%Y%m%d')
+        return df_temp
+    elif name == 'vacc':
+        df_vacc = pd.read_csv("data/covid/covid_hk_vacc_std.csv")
+        df_vacc['report_date'] = pd.to_datetime(df_vacc['report_date'], format='%Y%m%d')
+        return df_vacc
     else:
         raise NotImplementedError()
 
