@@ -54,7 +54,14 @@ def read_join_df() -> pd.DataFrame:
 
     # merge
     df_all = pd.merge(df_case, df_temp, on="report_date")
-    df_all = pd.merge(df_all, df_vacc, on="report_date")
+    df_all = pd.merge_asof(df_all, df_vacc, on='report_date', direction='backward')
+    df_all = df_all.fillna(0)
+
+    # rearrange columns
+    rearranged_columns = list(df_all.columns)
+    rearranged_columns.remove('count')
+    rearranged_columns.append('count')
+    df_all = df_all[rearranged_columns]
 
     return df_all
 
