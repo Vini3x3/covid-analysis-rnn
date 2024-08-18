@@ -1,8 +1,6 @@
 import numpy as np
-import pandas as pd
 import torch
 
-from lib.covid_module import get_date_count
 from loader.DataLoader import read_sequence
 from loader.DataTransformer import lag_list, moving_average
 from model.LstmModel import LstmModel
@@ -23,14 +21,6 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
     else:
         return input_sequence
 
-
-# df_infected = pd.read_csv("data/covid/covid_hk_case_std.csv")
-# df_infected['report_date'] = pd.to_datetime(df_infected['report_date'], format='%Y%m%d')  # convert to datetime type
-# print(df_infected.shape)
-#
-# df_count = get_date_count(df_infected, 'report_date', '%Y%m%d')
-# print(df_count.head())
-# print(df_count.shape)
 
 sequence = read_sequence('case')
 sequence = transform_sequence(sequence, MODE)
