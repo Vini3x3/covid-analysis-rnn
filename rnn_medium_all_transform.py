@@ -28,13 +28,14 @@ shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, 1:]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take the last element
+y_train = y_train.reshape(-1, 1)
 
 x_train = torch.from_numpy(x_train.astype('float64')).type(torch.Tensor)  # convert to tensor
 y_train = torch.from_numpy(y_train.astype('int32')).type(torch.Tensor)  # convert to tensor
 
 # build model
 input_dim = x_train.shape[-1]
-hidden_dim = 32
+hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
@@ -47,7 +48,6 @@ optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
 model.train()
 for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
-    y_pred = y_pred.reshape(-1)
     loss = loss_fn(y_pred, y_train)
     if epoch % 100 == 0:
         print("Epoch: %d | MSE: %.2E" % (epoch, loss.item()))
@@ -58,7 +58,6 @@ for epoch in range(1, num_epochs + 1):
 # test
 model.eval()
 y_pred = model(x_train[:5])
-y_pred = y_pred.reshape(-1)
 y_pred = y_pred.detach().numpy()  # revert from tensor
 y_pred = y_pred.reshape(-1)  # reshape back to normal list
 print("sample prediction:  ", y_pred)
