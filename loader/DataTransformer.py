@@ -18,3 +18,8 @@ def moving_average(data: np.ndarray, window_size: int, alpha: float = 1.0):
     kernel = kernel / sum(kernel)
     return np.convolve(data, kernel, mode='valid')
 
+def normalize(vector: np.ndarray) -> np.ndarray:
+    min_data = np.min(vector)
+    max_data = np.max(vector)
+    return (vector - min_data) / (max_data - min_data)
+

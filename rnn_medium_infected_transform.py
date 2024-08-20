@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from loader.DataLoader import read_sequence
-from loader.DataTransformer import lag_list, moving_average
+from loader.DataTransformer import lag_list, moving_average, normalize
 from model.LstmModel import LstmModel
 
 # script parameter
@@ -18,6 +18,8 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
         return moving_average(input_sequence, 14, 0.95)
     elif mode == 'D1':
         return np.diff(input_sequence)
+    elif mode == 'NORM':
+        return normalize(input_sequence)
     else:
         return input_sequence
 
