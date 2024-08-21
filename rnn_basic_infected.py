@@ -34,7 +34,7 @@ for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
     loss = loss_fn(y_pred, y_train)
     if epoch % 100 == 0:
-        print("Epoch: %d | MSE: %.2E | RSE: %.2E" % (epoch, loss.item(), loss.item() / y_var))
+        print("Epoch: %d | MSE: %.2E | RRSE: %.2E" % (epoch, loss.item(), np.sqrt(loss.item() / y_var)))
     optimiser.zero_grad()
     loss.backward()
     optimiser.step()

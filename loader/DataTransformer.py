@@ -23,3 +23,9 @@ def normalize(vector: np.ndarray) -> np.ndarray:
     max_data = np.max(vector)
     return (vector - min_data) / (max_data - min_data)
 
+def normalize_matrix(matrix: np.ndarray) -> np.ndarray:
+    transposed = np.transpose(matrix)
+    for i in range(transposed.shape[0]):
+        transposed[i, :] = normalize(transposed[i, :])
+    return np.transpose(transposed)
+

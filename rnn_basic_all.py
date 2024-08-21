@@ -1,48 +1,34 @@
 import numpy as np
 import torch
 
-from loader.DataLoader import read_sequence
-from loader.DataTransformer import lag_list, moving_average, normalize
+from loader.DataLoader import read_sequence, read_dataframe
+from loader.DataTransformer import lag_list, moving_average
 from model.LstmModel import LstmModel
 
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
-MODE = 'NORM'
+MODE = 'MA'
 
 
 # prepare data
-def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray:
-    if mode == 'MA':
-        return moving_average(input_sequence, 14)
-    elif mode == 'DMA':
-        return moving_average(input_sequence, 14, 0.95)
-    elif mode == 'D1':
-        return np.diff(input_sequence)
-    elif mode == 'NORM':
-        return normalize(input_sequence)
-    else:
-        return input_sequence
-
-
-sequence = read_sequence('case')
-sequence = transform_sequence(sequence, MODE)
-y_var = np.var(sequence)
-sequence = sequence.reshape(-1, 1)
+sequence = read_dataframe('all').to_numpy()
+y_var = np.var(sequence[:,-1])
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
-x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
-y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element
+x_train = shifted_sequence[:, :-1, 1:]  # for each delayed sequence, take all elements except last element
+y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take the last element
+y_train = y_train.reshape(-1, 1)
 
-x_train = torch.from_numpy(x_train).type(torch.Tensor)  # convert to tensor
-y_train = torch.from_numpy(y_train).type(torch.Tensor)  # convert to tensor
+x_train = torch.from_numpy(x_train.astype('float64')).type(torch.Tensor)  # convert to tensor
+y_train = torch.from_numpy(y_train.astype('int32')).type(torch.Tensor)  # convert to tensor
 
 # build model
-input_dim = 1
-hidden_dim = 32
+input_dim = x_train.shape[-1]
+hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-model = LstmModel(input_dim, hidden_dim, num_layers, output_dim, bidirectional=True)
+model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
 num_epochs = 3_000

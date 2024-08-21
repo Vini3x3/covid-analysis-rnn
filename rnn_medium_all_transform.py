@@ -2,12 +2,12 @@ import numpy as np
 import torch
 
 from loader.DataLoader import read_sequence, read_dataframe
-from loader.DataTransformer import lag_list, moving_average
+from loader.DataTransformer import lag_list, moving_average, normalize_matrix
 from model.LstmModel import LstmModel
 
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
-MODE = 'MA'
+MODE = 'NORM'
 
 
 # prepare data
@@ -18,13 +18,17 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
         return moving_average(input_sequence, 14, 0.95)
     elif mode == 'D1':
         return np.diff(input_sequence)
+    elif mode == 'NORM':
+        return normalize_matrix(input_sequence)
     else:
         return input_sequence
 
 
 sequence = read_dataframe('all').to_numpy()
+sequence = sequence[:, 1:]
+sequence = transform_sequence(sequence, MODE)
+
 y_var = np.var(sequence[:,-1])
-# sequence = transform_sequence(sequence, MODE)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, 1:]  # for each delayed sequence, take all elements except last element
@@ -51,7 +55,7 @@ for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
     loss = loss_fn(y_pred, y_train)
     if epoch % 100 == 0:
-        print("Epoch: %d | MSE: %.2E | RSE: %.2E" % (epoch, loss.item(), loss.item() / y_var))
+        print("Epoch: %d | MSE: %.2E | RRSE: %.2E" % (epoch, loss.item(), np.sqrt(loss.item() / y_var)))
     optimiser.zero_grad()
     loss.backward()
     optimiser.step()

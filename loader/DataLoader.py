@@ -53,7 +53,7 @@ def read_join_df() -> pd.DataFrame:
     df_vacc = get_date_sum(df_vacc, 'report_date', '%Y%m%d')
 
     # merge
-    df_all = pd.merge_asof(df_case, df_vacc, on="report_date", direction='backward')  # left join
+    df_all = pd.merge_asof(df_case, df_temp, on="report_date", direction='backward')  # left join
     df_all = pd.merge_asof(df_all, df_vacc, on='report_date', direction='backward')  # left join
     df_all = df_all.fillna(0)
 
