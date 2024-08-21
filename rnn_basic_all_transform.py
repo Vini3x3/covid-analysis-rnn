@@ -23,6 +23,7 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
 
 
 sequence = read_dataframe('all').to_numpy()
+y_var = np.var(sequence[:,-1])
 # sequence = transform_sequence(sequence, MODE)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
@@ -50,7 +51,7 @@ for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
     loss = loss_fn(y_pred, y_train)
     if epoch % 100 == 0:
-        print("Epoch: %d | MSE: %.2E" % (epoch, loss.item()))
+        print("Epoch: %d | MSE: %.2E | RSE: %.2E" % (epoch, loss.item(), loss.item() / y_var))
     optimiser.zero_grad()
     loss.backward()
     optimiser.step()

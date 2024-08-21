@@ -7,7 +7,7 @@ from model.LstmModel import LstmModel
 
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
-MODE = 'MA'
+MODE = ''
 
 
 # prepare data
@@ -26,6 +26,7 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
 
 sequence = read_sequence('case')
 sequence = transform_sequence(sequence, MODE)
+y_var = np.var(sequence)
 sequence = sequence.reshape(-1, 1)
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
 
@@ -52,7 +53,7 @@ for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
     loss = loss_fn(y_pred, y_train)
     if epoch % 100 == 0:
-        print("Epoch: %d | MSE: %.2E" % (epoch, loss.item()))
+        print("Epoch: %d | MSE: %.2E | RSE: %.2E" % (epoch, loss.item(), loss.item() / y_var))
     optimiser.zero_grad()
     loss.backward()
     optimiser.step()
