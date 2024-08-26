@@ -3,8 +3,7 @@ import torch
 
 from loader.DataLoader import read_sequence
 from loader.DataTransformer import lag_list, moving_average, normalize
-from model.CnnLstmModel import CnnLstmModel
-from model.LstmModel import LstmModel
+from model.FcLstmModel import FcLstmModel
 
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
@@ -43,12 +42,13 @@ hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-model = CnnLstmModel(input_dim, 16)
+# model = CnnLstmModel(input_dim, 16)
+model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, 16 - 1, 0, 0)
 
 # train
 num_epochs = 3_000
 loss_fn = torch.nn.MSELoss()
-optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
+optimiser = torch.optim.Adam(model.parameters(), lr=0.02)
 model.train()
 for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
