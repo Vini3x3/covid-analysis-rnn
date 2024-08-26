@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class CnnLstmModel(nn.Module):
-    def __init__(self, num_features, num_timesteps, num_classes=1):
+    def __init__(self, num_features, num_timesteps):
         super(CnnLstmModel, self).__init__()
 
         # 1D Convolutional layers
@@ -30,13 +30,12 @@ class CnnLstmModel(nn.Module):
         x = x.permute(0, 2, 1)
 
         # Apply LSTM layers
-        x, (hn, cn) = self.lstm(x)
+        x, _ = self.lstm(x)
 
         # Flatten the output from LSTM
         x = x.contiguous().view(x.size(0), -1)
 
         # Apply fully connected layers
-        # 731, 550
         x = self.relu(self.fc1(x))
         x = self.dropout(x)
         x = self.fc2(x)
