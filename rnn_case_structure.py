@@ -39,14 +39,14 @@ y_train = torch.from_numpy(y_train).type(torch.Tensor)  # convert to tensor
 
 # build model
 input_dim = 1
-hidden_dim = 32
+hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
 model = CnnLstmModel(input_dim, 16)
 
 # train
-num_epochs = 6_000
+num_epochs = 3_000
 loss_fn = torch.nn.MSELoss()
 optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
 model.train()

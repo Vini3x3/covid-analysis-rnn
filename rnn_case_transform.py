@@ -42,7 +42,7 @@ hidden_dim = 32
 num_layers = 2
 output_dim = 1
 
-model = LstmModel(input_dim, hidden_dim, num_layers, output_dim, bidirectional=True)
+model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
 num_epochs = 3_000
