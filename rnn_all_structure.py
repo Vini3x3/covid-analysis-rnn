@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from loader.DataLoader import read_dataframe
-from loader.DataTransformer import lag_list, moving_average, normalize_matrix
+from loader.DataTransformer import lag_list, moving_average, normalize_matrix, diff_matrix
 from model.CnnLstmModel import CnnLstmModel
 from model.FcLstmModel import FcLstmModel
 
@@ -21,13 +21,17 @@ def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray
         return np.diff(input_sequence)
     elif mode == 'NORM':
         return normalize_matrix(input_sequence)
+    elif mode == 'DIFF':
+        return diff_matrix(input_sequence)
     else:
         return input_sequence
 
 
 sequence = read_dataframe('all').to_numpy()
 sequence = sequence[:, 1:]
-sequence = transform_sequence(sequence, MODE)
+sequence = transform_sequence(sequence, 'DIFF')
+sequence = transform_sequence(sequence, 'NORM')
+sequence[np.isnan(sequence)] = 0 # fill na - there is a column which are all 0
 
 y_var = np.var(sequence[:,-1])
 shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences

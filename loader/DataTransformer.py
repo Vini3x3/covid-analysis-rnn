@@ -29,3 +29,15 @@ def normalize_matrix(matrix: np.ndarray) -> np.ndarray:
         transposed[i, :] = normalize(transposed[i, :])
     return np.transpose(transposed)
 
+
+def diff_matrix(matrix: np.ndarray) -> np.ndarray:
+    output_matrix = np.zeros(matrix.shape)
+    for i in range(1, matrix.shape[-1]):
+        output_matrix[i:, :] = matrix[i, :] - matrix[i - 1, :]
+    return output_matrix
+
+def diff(vector: np.ndarray) -> np.ndarray:
+    output_vector = np.zeros_like(vector)
+    output_vector[0] = 0
+    output_vector[1:] = np.diff(vector)
+    return output_vector
