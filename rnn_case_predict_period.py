@@ -4,7 +4,7 @@ import numpy as np
 import torch
 
 from loader.DataLoader import read_sequence
-from loader.DataTransformer import lag_list
+from loader.DataTransformer import lag_list, diff_matrix, normalize_matrix, normalize, diff
 from model.FcLstmModel import FcLstmModel
 
 
@@ -29,6 +29,9 @@ wave_1 = sequence[43:88]
 wave_2 = sequence[146:265]
 wave_3 = sequence[266:490]
 wave_4 = sequence[702:723]
+
+wave_2 = diff(wave_2)
+wave_2 = normalize(wave_2)
 
 wave_1_x, wave_1_y = create_sequence(wave_2)
 wave_2_x, wave_2_y = create_sequence(wave_2)
