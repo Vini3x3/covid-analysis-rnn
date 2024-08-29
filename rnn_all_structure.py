@@ -4,10 +4,11 @@ import torch
 from loader.DataLoader import read_dataframe
 from loader.DataTransformer import lag_list, moving_average, normalize_matrix
 from model.CnnLstmModel import CnnLstmModel
+from model.FcLstmModel import FcLstmModel
 
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
-MODE = ''
+MODE = 'NORM'
 
 
 # prepare data
@@ -44,7 +45,8 @@ hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-model = CnnLstmModel(input_dim, 16)
+# model = CnnLstmModel(input_dim, 16)
+model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, 16 - 1, 0, 0)
 
 # train
 num_epochs = 3_000
