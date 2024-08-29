@@ -21,6 +21,8 @@ def moving_average(data: np.ndarray, window_size: int, alpha: float = 1.0):
 def normalize(vector: np.ndarray) -> np.ndarray:
     min_data = np.min(vector)
     max_data = np.max(vector)
+    if min_data == max_data:
+        return np.zeros(vector.shape)
     return (vector - min_data) / (max_data - min_data)
 
 def normalize_matrix(matrix: np.ndarray) -> np.ndarray:
