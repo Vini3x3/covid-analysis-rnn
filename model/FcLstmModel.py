@@ -20,6 +20,7 @@ class FcLstmModel(nn.Module):
 
         # Attention
         self.attention = WeightedOutputLayer(lstm_hidden_size * seq_len)
+        self.softmax = nn.Softmax(dim=1)
 
         # Neural Network
         self.fc1 = nn.Linear(lstm_hidden_size * seq_len, output_size)
@@ -29,6 +30,7 @@ class FcLstmModel(nn.Module):
         out, _ = self.lstm(x)
         out = out.reshape(x.shape[0], -1) # flatten to pass full sequence
         out = self.attention(out)
+        # out = self.softmax(out)
         out = self.fc1(out)
         out = self.dropout1(out)
 
