@@ -87,7 +87,7 @@ for epoch in range(1, num_epochs + 1):
 
 # predict
 model.eval()
-# model.load_state_dict(best_model_state)
+model.load_state_dict(best_model_state)
 x_test = wave_2_x[TRAIN_RANGE].reshape(1, LAG - 1, 1)
 y_pred = []
 # prediction_range = wave_2_x.shape[0] - TRAIN_RANGE
