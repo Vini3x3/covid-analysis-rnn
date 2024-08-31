@@ -8,14 +8,15 @@ from model.LstmModel import LstmModel
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
 MODE = ''
+LAG = 16
 
 
 # prepare data
 def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray:
     if mode == 'MA':
-        return moving_average(input_sequence, 14)
+        return moving_average(input_sequence, LAG)
     elif mode == 'DMA':
-        return moving_average(input_sequence, 14, 0.95)
+        return moving_average(input_sequence, LAG, 0.95)
     elif mode == 'D1':
         return np.diff(input_sequence)
     elif mode == 'NORM':
@@ -30,7 +31,7 @@ sequence = read_sequence('case')
 sequence = transform_sequence(sequence, MODE)
 y_var = np.var(sequence)
 sequence = sequence.reshape(-1, 1)
-shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
+shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element

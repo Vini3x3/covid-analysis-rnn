@@ -5,11 +5,14 @@ from loader.DataLoader import read_sequence
 from loader.DataTransformer import lag_list
 from model.LstmModel import LstmModel
 
+# data parameter
+LAG = 16
+
 # prepare data
 sequence = read_sequence('case')
 y_var = np.var(sequence)
 sequence = sequence.reshape(-1, 1)
-shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
+shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element

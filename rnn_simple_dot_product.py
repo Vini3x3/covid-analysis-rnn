@@ -9,10 +9,12 @@ To train a RNN model that can calculate dot product between two array,
 e.g. given [3,4,5] and [6,7,8], it can predict 3*6+4*7+5*8=86 
 """
 
-# prepare data
+# data parameter
 
 num_samples = 200
 seq_length = 5
+
+# prepare data
 
 x1 = np.random.uniform(0, 1, (num_samples, seq_length))
 x2 = np.random.uniform(0, 1, (num_samples, seq_length))

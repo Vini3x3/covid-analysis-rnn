@@ -8,12 +8,13 @@ from model.LstmModel import LstmModel
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
 MODE = 'MA'
+LAG = 16
 
 
 # prepare data
 sequence = read_dataframe('all').to_numpy()
 y_var = np.var(sequence[:,-1])
-shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
+shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, 1:]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take the last element

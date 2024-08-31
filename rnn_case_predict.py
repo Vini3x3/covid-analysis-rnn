@@ -7,11 +7,14 @@ from loader.DataLoader import read_sequence
 from loader.DataTransformer import lag_list
 from model.FcLstmModel import FcLstmModel
 
+# data parameter
+LAG = 16
+
 # prepare data
 sequence = read_sequence('case')
 y_var = np.var(sequence)
 sequence = sequence.reshape(-1, 1)
-shifted_sequence = lag_list(sequence, 16)  # shift into delayed sequences
+shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element
@@ -25,7 +28,7 @@ hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, 16 - 1, 0, 0)
+model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG - 1, 0, 0)
 
 # train
 num_epochs = 2_000
@@ -51,13 +54,13 @@ for epoch in range(1, num_epochs + 1):
 model.eval()
 # load('rnn_case_predict.chk', model)
 model.load_state_dict(best_model_state)
-x_test = x_train[0].reshape(1, 15, 1)
+x_test = x_train[0].reshape(1, LAG - 1, 1)
 y_pred = []
 prediction_range = 30 # x_train.shape[0]
 for _ in range(prediction_range):
     _ = model(x_test)
     x_test = torch.cat((x_test[0][1:], _), dim=0)
-    x_test = x_test.reshape(1, 15, 1)
+    x_test = x_test.reshape(1, LAG - 1, 1)
     _2 = _.detach().numpy()  # revert from tensor
     _2 = _2.reshape(-1)  # reshape back to normal list
     y_pred.append(_2)

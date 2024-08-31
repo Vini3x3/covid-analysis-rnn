@@ -10,10 +10,13 @@ To train a RNN model that can guess the next number,
 e.g. given [3,4,5] it can predict 6 
 """
 
+# data parameter
+LAG = 4
+
 # prepare data
 sequence = list(range(10))
 reshaped_sequence = np.array(sequence).reshape(-1, 1)  # reshape into individual list
-shifted_sequence = lag_list(reshaped_sequence, 4)  # shift into delayed sequences
+shifted_sequence = lag_list(reshaped_sequence, LAG)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, :]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, :]  # for each delayed sequence, only take the last element
@@ -23,7 +26,7 @@ y_train = torch.from_numpy(y_train).type(torch.Tensor)  # convert to tensor
 
 # build model
 input_dim = 1
-hidden_dim = 32
+hidden_dim = 16
 num_layers = 2
 output_dim = 1
 
