@@ -35,9 +35,9 @@ hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-model = CnnLstmModel(input_dim, LAG)
+# model = CnnLstmModel(input_dim, LAG)
 # model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG - 1, 0, 0)
-# model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
+model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
 num_epochs = 3_000

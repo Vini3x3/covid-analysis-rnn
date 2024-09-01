@@ -6,6 +6,8 @@ import torch
 from loader.DataLoader import read_dataframe
 from loader.DataTransformer import lag_list, transform_matrix
 from model.CnnLstmModel import CnnLstmModel
+from model.FcLstmModel import FcLstmModel
+from model.LstmModel import LstmModel
 
 
 def create_sequence(seq, lag):
@@ -50,12 +52,14 @@ hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-model = CnnLstmModel(input_dim, LAG + 1)
+# model = CnnLstmModel(input_dim, LAG + 1)
+model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG, 0, 0)
+# model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
-num_epochs = 2_000
+num_epochs = 6_000
 loss_fn = torch.nn.MSELoss()
-optimiser = torch.optim.Adam(model.parameters(), lr=0.01)
+optimiser = torch.optim.Adam(model.parameters(), lr=0.001)
 min_loss = np.inf
 best_model_state = None
 model.train()
@@ -82,11 +86,10 @@ x_test = wave_2_x[TRAIN_RANGE].reshape(1,LAG, wave_2_x.shape[2])
 y_pred = []
 # prediction_range = wave_2_x.shape[0] - TRAIN_RANGE
 prediction_range = 7
-for _ in range(prediction_range):
+for i in range(prediction_range):
     _ = model(x_test)
-    # the prediction cannot fit into multi dimension data!!!
-    x_test = torch.cat((x_test[0][1:], _.item()), dim=0)
-    x_test = x_test.reshape(1,LAG, wave_2_x.shape[2])
+    x_test = wave_2_x[TRAIN_RANGE + i].reshape(1, LAG, wave_2_x.shape[2])
+    x_test[0][-1][0] = torch.tensor(_.item())
     _2 = _.detach().numpy()  # revert from tensor
     _2 = _2.reshape(-1)  # reshape back to normal list
     y_pred.append(_2)
