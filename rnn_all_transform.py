@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 
-from loader.DataLoader import read_sequence, read_dataframe
-from loader.DataTransformer import lag_list, moving_average, normalize_matrix
+from loader.DataLoader import read_dataframe
+from loader.DataTransformer import lag_list, transform_matrix
 from model.LstmModel import LstmModel
 
 # script parameter
@@ -11,22 +11,9 @@ MODE = 'NORM'
 LAG = 16
 
 # prepare data
-def transform_sequence(input_sequence: np.ndarray, mode: str = '') -> np.ndarray:
-    if mode == 'MA':
-        return moving_average(input_sequence, LAG)
-    elif mode == 'DMA':
-        return moving_average(input_sequence, LAG, 0.95)
-    elif mode == 'D1':
-        return np.diff(input_sequence)
-    elif mode == 'NORM':
-        return normalize_matrix(input_sequence)
-    else:
-        return input_sequence
-
-
 sequence = read_dataframe('all').to_numpy()
 sequence = sequence[:, 1:]
-sequence = transform_sequence(sequence, MODE)
+sequence = transform_matrix(sequence, MODE)
 
 y_var = np.var(sequence[:,-1])
 shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences

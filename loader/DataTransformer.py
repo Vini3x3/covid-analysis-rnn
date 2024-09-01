@@ -43,3 +43,17 @@ def diff(vector: np.ndarray) -> np.ndarray:
     output_vector[0] = 0
     output_vector[1:] = np.diff(vector)
     return output_vector
+
+def transform_matrix(input_sequence: np.ndarray, mode: str = '', lag: int = 16) -> np.ndarray:
+    if mode == 'MA':
+        return moving_average(input_sequence, lag)
+    elif mode == 'DMA':
+        return moving_average(input_sequence, lag, 0.95)
+    elif mode == 'D1':
+        return np.diff(input_sequence)
+    elif mode == 'NORM':
+        return normalize_matrix(input_sequence)
+    elif mode == 'DIFF':
+        return diff_matrix(input_sequence)
+    else:
+        return input_sequence
