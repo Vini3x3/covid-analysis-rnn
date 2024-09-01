@@ -34,8 +34,8 @@ def normalize_matrix(matrix: np.ndarray) -> np.ndarray:
 
 def diff_matrix(matrix: np.ndarray) -> np.ndarray:
     output_matrix = np.zeros(matrix.shape)
-    for i in range(1, matrix.shape[-1]):
-        output_matrix[i:, :] = matrix[i, :] - matrix[i - 1, :]
+    for i in range(1, matrix.shape[0]):
+        output_matrix[i, :] = matrix[i, :] - matrix[i - 1,:]
     return output_matrix
 
 def diff(vector: np.ndarray) -> np.ndarray:
