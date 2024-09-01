@@ -3,7 +3,9 @@ import torch
 
 from loader.DataLoader import read_dataframe
 from loader.DataTransformer import lag_list, transform_matrix
+from model.CnnLstmModel import CnnLstmModel
 from model.FcLstmModel import FcLstmModel
+from model.LstmModel import LstmModel
 
 # script parameter
 # MODE: MA (moving average), D1(lag 1 degree), DMA(decaying moving average) or default no change
@@ -25,7 +27,7 @@ y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take th
 y_train = y_train.reshape(-1, 1)
 
 x_train = torch.from_numpy(x_train.astype('float64')).type(torch.Tensor)  # convert to tensor
-y_train = torch.from_numpy(y_train.astype('int32')).type(torch.Tensor)  # convert to tensor
+y_train = torch.from_numpy(y_train.astype('float64')).type(torch.Tensor)  # convert to tensor
 
 # build model
 input_dim = x_train.shape[-1]
@@ -33,8 +35,9 @@ hidden_dim = 64
 num_layers = 2
 output_dim = 1
 
-# model = CnnLstmModel(input_dim, LAG)
-model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG - 1, 0, 0)
+model = CnnLstmModel(input_dim, LAG)
+# model = FcLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG - 1, 0, 0)
+# model = LstmModel(input_dim, hidden_dim, num_layers, output_dim)
 
 # train
 num_epochs = 3_000

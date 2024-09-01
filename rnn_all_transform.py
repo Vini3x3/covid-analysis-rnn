@@ -23,7 +23,7 @@ y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take th
 y_train = y_train.reshape(-1, 1)
 
 x_train = torch.from_numpy(x_train.astype('float64')).type(torch.Tensor)  # convert to tensor
-y_train = torch.from_numpy(y_train.astype('int32')).type(torch.Tensor)  # convert to tensor
+y_train = torch.from_numpy(y_train.astype('float64')).type(torch.Tensor)  # convert to tensor
 
 # build model
 input_dim = x_train.shape[-1]
