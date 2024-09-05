@@ -43,7 +43,6 @@ def read_sequence(name: str) -> np.ndarray:
 def read_join_df() -> pd.DataFrame:
     # count
     df_count = read_dataframe('count')
-    df_count = get_date_count(df_count, 'report_date', '%Y%m%d')
 
     # temp
     df_temp = read_dataframe('temp')
