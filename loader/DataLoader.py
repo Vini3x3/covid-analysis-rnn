@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from lib.covid_module import get_date_count
+from loader import DataTransformer
 
 
 def read_dataframe(name: str) -> pd.DataFrame:
@@ -9,6 +10,14 @@ def read_dataframe(name: str) -> pd.DataFrame:
         df_case = pd.read_csv("data/covid/covid_hk_case_std.csv")
         df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
         return df_case
+    if name == 'count':
+        df_case = pd.read_csv("data/covid/covid_hk_case_count_std.csv")
+        df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
+        data = {
+            'report_date': df_case['report_date'],
+            'count': DataTransformer.diff(df_case['cuml_case_cnt'].to_numpy())
+        }
+        return pd.DataFrame(data)
     elif name == 'temp':
         df_temp = pd.read_csv("data/covid/hk_daily_temp_std.csv")
         df_temp['report_date'] = pd.to_datetime(df_temp['report_date'], format='%Y%m%d')
@@ -32,9 +41,9 @@ def read_sequence(name: str) -> np.ndarray:
 
 
 def read_join_df() -> pd.DataFrame:
-    # case
-    df_case = read_dataframe('case')
-    df_case = get_date_count(df_case, 'report_date', '%Y%m%d')
+    # count
+    df_count = read_dataframe('count')
+    df_count = get_date_count(df_count, 'report_date', '%Y%m%d')
 
     # temp
     df_temp = read_dataframe('temp')
@@ -53,7 +62,7 @@ def read_join_df() -> pd.DataFrame:
     df_vacc = get_date_sum(df_vacc, 'report_date', '%Y%m%d')
 
     # merge
-    df_all = pd.merge_asof(df_case, df_temp, on="report_date", direction='backward')  # left join
+    df_all = pd.merge_asof(df_count, df_temp, on="report_date", direction='backward')  # left join
     df_all = pd.merge_asof(df_all, df_vacc, on='report_date', direction='backward')  # left join
     df_all = df_all.fillna(0)
 
