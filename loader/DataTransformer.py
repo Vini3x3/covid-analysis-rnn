@@ -44,6 +44,12 @@ def diff(vector: np.ndarray) -> np.ndarray:
     output_vector[1:] = np.diff(vector)
     return output_vector
 
+def get_min_max(sequence):
+    return min(sequence), max(sequence)
+
+def denorm(sequence, overall_min, overall_max):
+    return sequence * (overall_max - overall_min) + overall_min
+
 def transform_matrix(input_sequence: np.ndarray, mode: str = '', lag: int = 16) -> np.ndarray:
     if mode == 'MA':
         return moving_average(input_sequence, lag)
