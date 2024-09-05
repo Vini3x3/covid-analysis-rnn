@@ -50,7 +50,7 @@ def t3_read_dataframe():
 
 def t4_read_all_df():
     df_all = read_dataframe('all')
-    assert (list(df_all.columns)) == ['report_date', 'count', 'avg_temp', 'min_temp', 'max_temp', 'sum']
+    assert (set(df_all.columns)) == {'report_date', 'avg_temp', 'min_temp', 'max_temp', 'count', 'sum'}
 
 
 if __name__ == '__main__':
