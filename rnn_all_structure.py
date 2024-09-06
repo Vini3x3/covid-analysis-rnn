@@ -15,9 +15,9 @@ LAG = 16
 # prepare data
 sequence = read_dataframe('all').to_numpy()
 sequence = sequence[:, 1:]
-sequence = transform_matrix(sequence, 'DIFF')
+# sequence = transform_matrix(sequence, 'DIFF')
 sequence = transform_matrix(sequence, 'NORM')
-sequence[np.isnan(sequence)] = 0 # fill na - there is a column which are all 0
+# sequence[np.isnan(sequence)] = 0 # fill na - there is a column which are all 0
 
 y_var = np.var(sequence[:,-1])
 shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences
