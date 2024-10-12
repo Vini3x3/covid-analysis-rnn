@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class CnnLstmModel(nn.Module):
-    def __init__(self, num_features, num_timesteps):
+    def __init__(self, num_features, num_timesteps, lstm_hidden_size = 50, lstm_layer = 2):
         super(CnnLstmModel, self).__init__()
 
         # 1D Convolutional layers
@@ -9,7 +9,7 @@ class CnnLstmModel(nn.Module):
         self.conv2 = nn.Conv1d(in_channels=64, out_channels=64, kernel_size=3)
 
         # LSTM layer
-        self.lstm = nn.LSTM(input_size=64, hidden_size=50, num_layers=2, batch_first=True)
+        self.lstm = nn.LSTM(input_size=64, hidden_size=lstm_hidden_size, num_layers=lstm_layer, batch_first=True)
 
         # Fully connected layer
         self.fc1 = nn.Linear(50 * (num_timesteps - 5), 100)  # Adjust for output size after CNN layers
