@@ -26,6 +26,10 @@ def read_dataframe(name: str) -> pd.DataFrame:
         df_vacc = pd.read_csv("data/covid/covid_hk_vacc_std.csv")
         df_vacc['report_date'] = pd.to_datetime(df_vacc['report_date'], format='%Y%m%d')
         return df_vacc
+    elif name == 'policy':
+        df_policy = pd.read_csv('data/covid/covid_hk_policy_std.csv')
+        df_policy['report_date'] = pd.to_datetime(df_policy['report_date'], format='%Y%m%d')
+        return df_policy
     elif name == 'all':
         return read_join_df()
     else:
@@ -60,9 +64,12 @@ def read_join_df() -> pd.DataFrame:
     ]]
     df_vacc = get_date_sum(df_vacc, 'report_date', '%Y%m%d')
 
+    df_policy = read_dataframe('policy')
+
     # merge
     df_all = pd.merge_asof(df_count, df_temp, on="report_date", direction='backward')  # left join
     df_all = pd.merge_asof(df_all, df_vacc, on='report_date', direction='backward')  # left join
+    df_all = pd.merge_asof(df_all, df_policy, on='report_date', direction='backward')  # left join
     df_all = df_all.fillna(0)
 
     # rearrange columns

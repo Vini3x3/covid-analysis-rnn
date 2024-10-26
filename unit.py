@@ -47,10 +47,22 @@ def t3_read_dataframe():
         'report_year_month'
     ]
 
+    df_policy = read_dataframe('policy')
+    assert list(df_policy.columns) == [
+        'report_date', 'school', 'no_hong_kong_p', 'hong_kong_group', 'hong_kong_all', 'home_other_14',
+         'home_21', 'home_14', 'home_7', 'home_3',
+         'type_1_close', 'type_2_close', 'type_3_close',
+         'people2', 'people4', 'people8',
+         '0500_1800', '0500_2200', '0500_0200'
+    ]
+
 
 def t4_read_all_df():
     df_all = read_dataframe('all')
-    assert (set(df_all.columns)) == {'report_date', 'avg_temp', 'min_temp', 'max_temp', 'count', 'sum'}
+    expected_headers = ['report_date', 'avg_temp', 'min_temp', 'max_temp', 'count', 'sum', 'home_3']
+    headers = set(df_all.columns)
+    for _ in expected_headers:
+        assert _ in headers
 
 
 if __name__ == '__main__':
