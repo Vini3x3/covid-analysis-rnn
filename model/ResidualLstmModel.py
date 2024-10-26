@@ -12,8 +12,7 @@ class ResidualLstmModel(nn.Module):
     def forward(self, x):
         out, _ = self.lstm(x)
         out = self.fc(out[:, -1, :])
-        # out += self.residual(x[:, -1, :])
-        residual = self.residual(x[:, -1, :])
+        residual = self.residual(x[:, -1, :]) # last timestamp of output only
 
         out = self.fc2(torch.cat((out, residual), dim=1))
         return out
