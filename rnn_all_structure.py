@@ -45,8 +45,8 @@ model = ResidualLstmModel(input_dim, hidden_dim, num_layers, output_dim)
 # train
 num_epochs = 3_000
 # loss_fn = torch.nn.MSELoss()
-loss_fn = CurveLoss()
-optimiser = torch.optim.Adam(model.parameters(), lr=1e-5)
+loss_fn = CurveLoss(model, 1e-5)
+optimiser = torch.optim.Adam(model.parameters(), lr=1e5)
 model.train()
 for epoch in range(1, num_epochs + 1):
     y_pred = model(x_train)
