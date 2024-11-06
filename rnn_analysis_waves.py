@@ -27,6 +27,8 @@ y_train = y_train.reshape(-1, 1)
 x_train = torch.from_numpy(x_train.astype('float64')).type(torch.Tensor)  # convert to tensor
 y_train = torch.from_numpy(y_train.astype('int32')).type(torch.Tensor)  # convert to tensor
 
+if WAVE == 1:
+    x_train, y_train = x_train[52 - LAG:103 - LAG], y_train[52 - LAG:103 - LAG]
 if WAVE == 2:
     x_train, y_train = x_train[160 - LAG:280 - LAG], y_train[160 - LAG:280 - LAG]
 elif WAVE == 3:

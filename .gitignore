@@ -167,3 +167,12 @@ checkpoint_all/
 /checkpoint_wave2/
 /checkpoint_wave3/
 /checkpoint_wave4/
+/checkpoint_wave1/best_fc2_bias.pt
+/checkpoint_wave1/best_fc2_weight.pt
+/checkpoint_wave1/best_lstm_bias_hh0.pt
+/checkpoint_wave1/best_lstm_bias_ih0.pt
+/checkpoint_wave1/best_lstm_weight_hh0.pt
+/checkpoint_wave1/best_lstm_weight_ih0.pt
+/checkpoint_wave1/best_residual_bias.pt
+/checkpoint_wave1/best_residual_weight.pt
+/checkpoint_wave1/best_train_loss.npy
