@@ -7,10 +7,10 @@ import torch
 from lib.uilt_module import CurveLoss
 from loader.DataLoader import read_dataframe
 from loader.DataTransformer import lag_list
-from model.ResidualLstmModel import ResidualLstmModel
+from model.Attention_LstmModel import Attention_ResidualLstmModel
 
 # script parameter
-LAG = 16
+LAG = 15
 WAVE = 4
 REPEAT = 100
 
@@ -18,7 +18,7 @@ REPEAT = 100
 sequence = read_dataframe('all').to_numpy()
 # sequence = read_dataframe('count').to_numpy()
 y_var = np.var(sequence[:, -1])
-shifted_sequence = lag_list(sequence, LAG)  # shift into delayed sequences
+shifted_sequence = lag_list(sequence, LAG + 1)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, 1:]  # for each delayed sequence, take all elements except last element
 y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take the last element
@@ -54,10 +54,14 @@ best_lstm_weight_hh0 = []
 best_lstm_bias_ih0 = []
 best_lstm_bias_hh0 = []
 
+best_lstm_att_q = []
+best_lstm_att_k = []
+best_lstm_att_v = []
+
 for _ in range(REPEAT):
     best_model_state = None
     best_model_train_loss = np.inf
-    model = ResidualLstmModel(input_dim, hidden_dim, num_layers, output_dim)
+    model = Attention_ResidualLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG)
 
     # train
     num_epochs = 3_000
@@ -90,6 +94,10 @@ for _ in range(REPEAT):
     best_lstm_bias_ih0.append(model.lstm.bias_ih_l0.data)
     best_lstm_bias_hh0.append(model.lstm.bias_hh_l0.data)
 
+    best_lstm_att_q.append(model.attention.query.weight)
+    best_lstm_att_k.append(model.attention.key.weight)
+    best_lstm_att_v.append(model.attention.value.weight)
+
 ### save files
 CHECKPOINT_DIR = 'checkpoint_wave' + str(WAVE)
 if not os.path.exists(CHECKPOINT_DIR):
@@ -105,5 +113,9 @@ torch.save(torch.stack(best_lstm_weight_ih0, dim=0), CHECKPOINT_DIR + "/best_lst
 torch.save(torch.stack(best_lstm_weight_hh0, dim=0), CHECKPOINT_DIR + "/best_lstm_weight_hh0.pt")
 torch.save(torch.stack(best_lstm_bias_ih0, dim=0), CHECKPOINT_DIR + "/best_lstm_bias_ih0.pt")
 torch.save(torch.stack(best_lstm_bias_hh0, dim=0), CHECKPOINT_DIR + "/best_lstm_bias_hh0.pt")
+
+torch.save(torch.stack(best_lstm_att_q, dim=0), CHECKPOINT_DIR + "/best_lstm_att_q.pt")
+torch.save(torch.stack(best_lstm_att_k, dim=0), CHECKPOINT_DIR + "/best_lstm_att_k.pt")
+torch.save(torch.stack(best_lstm_att_v, dim=0), CHECKPOINT_DIR + "/best_lstm_att_v.pt")
 
 np.save(CHECKPOINT_DIR + '/best_train_loss.npy', np.array(best_training_loss))
