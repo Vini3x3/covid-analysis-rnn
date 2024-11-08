@@ -70,7 +70,7 @@ def read_join_df() -> pd.DataFrame:
 
     df_policy = read_dataframe('policy')
 
-    df_humid = read_dataframe('df_humid')
+    df_humid = read_dataframe('humid')
     df_humid = df_humid[['report_date', 'avg_humid']]
 
     # merge
