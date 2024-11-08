@@ -1,7 +1,7 @@
 import os
+
 import numpy as np
 import pandas as pd
-import sys
 
 from lib.covid_module import get_date_count
 from loader import DataTransformer
@@ -35,6 +35,13 @@ def read_dataframe(name: str) -> pd.DataFrame:
         df_policy = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/covid_hk_policy_std.csv')
         df_policy['report_date'] = pd.to_datetime(df_policy['report_date'], format='%Y%m%d')
         return df_policy
+    elif name == 'humid':
+        df_humid = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/hk_daily_avg_humid_std.csv')
+        df_humid['report_date'] = pd.to_datetime(df_humid['report_date'], format='%Y%m%d')
+        return df_humid
+    elif name == 'vac_age':
+        df_vac_age = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/hk_vacc_age_grp_daily_count.csv')
+        df_vac_age['report_date'] = pd.to_datetime(df_vac_age['report_date'], format='%Y%m%d')
     elif name == 'all':
         return read_join_df()
     else:
@@ -66,10 +73,14 @@ def read_join_df() -> pd.DataFrame:
 
     df_policy = read_dataframe('policy')
 
+    df_humid = read_dataframe('df_humid')
+    df_humid = df_humid[['report_date', 'avg_humid']]
+
     # merge
     df_all = pd.merge_asof(df_count, df_temp, on="report_date", direction='backward')  # left join
     df_all = pd.merge_asof(df_all, df_vacc, on='report_date', direction='backward')  # left join
     df_all = pd.merge_asof(df_all, df_policy, on='report_date', direction='backward')  # left join
+    df_all = pd.merge_asof(df_all, df_humid, on='report_date', direction='backward')  # left join
     df_all = df_all.fillna(0)
 
     # rearrange columns
