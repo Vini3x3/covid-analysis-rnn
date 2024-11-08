@@ -1,17 +1,22 @@
+import os
 import numpy as np
 import pandas as pd
+import sys
 
 from lib.covid_module import get_date_count
 from loader import DataTransformer
 
 
 def read_dataframe(name: str) -> pd.DataFrame:
+    curr_dir = os.getcwd()
+    project_dir = curr_dir.split('GitHub')[0]
+    analysis_on_covid_dir = os.path.join(project_dir, 'GitHub', 'analysis-on-covid')
     if name == 'case':
-        df_case = pd.read_csv("data/covid/covid_hk_case_std.csv")
+        df_case = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/covid_hk_case_detail_std.csv")
         df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
         return df_case
     if name == 'count':
-        df_case = pd.read_csv("data/covid/covid_hk_case_count_std.csv")
+        df_case = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/covid_hk_case_count_std.csv")
         df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
         data = {
             'report_date': df_case['report_date'],
@@ -19,15 +24,15 @@ def read_dataframe(name: str) -> pd.DataFrame:
         }
         return pd.DataFrame(data)
     elif name == 'temp':
-        df_temp = pd.read_csv("data/covid/hk_daily_temp_std.csv")
+        df_temp = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/hk_daily_avg_temp_std.csv")
         df_temp['report_date'] = pd.to_datetime(df_temp['report_date'], format='%Y%m%d')
         return df_temp
     elif name == 'vacc':
-        df_vacc = pd.read_csv("data/covid/covid_hk_vacc_std.csv")
+        df_vacc = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/covid_hk_vacc_daily_count_std.csv")
         df_vacc['report_date'] = pd.to_datetime(df_vacc['report_date'], format='%Y%m%d')
         return df_vacc
     elif name == 'policy':
-        df_policy = pd.read_csv('data/covid/covid_hk_policy_std.csv')
+        df_policy = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/covid_hk_policy_std.csv')
         df_policy['report_date'] = pd.to_datetime(df_policy['report_date'], format='%Y%m%d')
         return df_policy
     elif name == 'all':
@@ -50,18 +55,13 @@ def read_join_df() -> pd.DataFrame:
 
     # temp
     df_temp = read_dataframe('temp')
-    df_temp = df_temp[['report_date', 'avg_temp', 'min_temp', 'max_temp']]
+    df_temp = df_temp[['report_date', 'avg_temp']]
 
     # vacc
     df_vacc = read_dataframe('vacc')
-    df_vacc = df_vacc[[
-        'report_date', 'sinov_1st_dose', 'sinov_2nd_dose', 'sinov_3rd_dose', 'sinov_4th_dose',
-        'sinov_5th_dose', 'sinov_6th_dose', 'sinov_7th_dose', 'biont_1st_dose', 'biont_2nd_dose', 'biont_3rd_dose',
-        'biont_4th_dose', 'biont_5th_dose', 'biont_6th_dose', 'biont_7th_dose', 'does_all', 'sinov_1st_dose_cum',
-        'sinov_2nd_dose_cum', 'sinov_3rd_dose_cum', 'sinov_4th_dose_cum', 'sinov_5th_dose_cum', 'sinov_6th_dose_cum',
-        'sinov_7th_dose_cum', 'biont_1st_dose_cum', 'biont_2nd_dose_cum', 'biont_3rd_dose_cum', 'biont_4th_dose_cum',
-        'biont_5th_dose_cum', 'biont_6th_dose_cum', 'biont_7th_dose_cum'
-    ]]
+    df_vacc = df_vacc[['report_date',
+                       'sinov_1st_dose', 'sinov_2nd_dose', 'sinov_3rd_dose',
+                       'biont_1st_dose', 'biont_2nd_dose', 'biont_3rd_dose']]
     df_vacc = get_date_sum(df_vacc, 'report_date', '%Y%m%d')
 
     df_policy = read_dataframe('policy')
