@@ -8,15 +8,12 @@ from loader import DataTransformer
 
 
 def read_dataframe(name: str) -> pd.DataFrame:
-    curr_dir = os.getcwd()
-    project_dir = curr_dir.split('GitHub')[0]
-    analysis_on_covid_dir = os.path.join(project_dir, 'GitHub', 'analysis-on-covid')
     if name == 'case':
-        df_case = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/covid_hk_case_detail_std.csv")
+        df_case = pd.read_csv(get_file_path("data/std_data/hk/covid_hk_case_detail_std.csv"))
         df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
         return df_case
     if name == 'count':
-        df_case = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/covid_hk_case_count_std.csv")
+        df_case = pd.read_csv(get_file_path("data/std_data/hk/covid_hk_case_count_std.csv"))
         df_case['report_date'] = pd.to_datetime(df_case['report_date'], format='%Y%m%d')
         data = {
             'report_date': df_case['report_date'],
@@ -24,23 +21,23 @@ def read_dataframe(name: str) -> pd.DataFrame:
         }
         return pd.DataFrame(data)
     elif name == 'temp':
-        df_temp = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/hk_daily_avg_temp_std.csv")
+        df_temp = pd.read_csv(get_file_path("data/std_data/hk/hk_daily_avg_temp_std.csv"))
         df_temp['report_date'] = pd.to_datetime(df_temp['report_date'], format='%Y%m%d')
         return df_temp
     elif name == 'vacc':
-        df_vacc = pd.read_csv(analysis_on_covid_dir + "/data/std_data/hk/covid_hk_vacc_daily_count_std.csv")
+        df_vacc = pd.read_csv(get_file_path("data/std_data/hk/covid_hk_vacc_daily_count_std.csv"))
         df_vacc['report_date'] = pd.to_datetime(df_vacc['report_date'], format='%Y%m%d')
         return df_vacc
     elif name == 'policy':
-        df_policy = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/covid_hk_policy_std.csv')
+        df_policy = pd.read_csv(get_file_path('data/std_data/hk/covid_hk_policy_std.csv'))
         df_policy['report_date'] = pd.to_datetime(df_policy['report_date'], format='%Y%m%d')
         return df_policy
     elif name == 'humid':
-        df_humid = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/hk_daily_avg_humid_std.csv')
+        df_humid = pd.read_csv(get_file_path('data/std_data/hk/hk_daily_avg_humid_std.csv'))
         df_humid['report_date'] = pd.to_datetime(df_humid['report_date'], format='%Y%m%d')
         return df_humid
     elif name == 'vac_age':
-        df_vac_age = pd.read_csv(analysis_on_covid_dir + '/data/std_data/hk/hk_vacc_age_grp_daily_count.csv')
+        df_vac_age = pd.read_csv(get_file_path('data/std_data/hk/hk_vacc_age_grp_daily_count.csv'))
         df_vac_age['report_date'] = pd.to_datetime(df_vac_age['report_date'], format='%Y%m%d')
     elif name == 'all':
         return read_join_df()
@@ -97,3 +94,10 @@ def get_date_sum(df: pd.DataFrame, col: str, date_format: str) -> pd.DataFrame:
     agg_df = df.groupby(col).sum()
     agg_df['sum'] = agg_df.sum(axis=1, numeric_only=True)
     return agg_df[['sum']].reset_index()
+
+
+def get_file_path(filename: str) -> str:
+    curr_dir = os.getcwd()
+    project_dir = curr_dir.split('GitHub')[0]
+    analysis_on_covid_dir = os.path.join(project_dir, 'GitHub', 'analysis-on-covid')
+    return analysis_on_covid_dir + '\\' + filename
