@@ -7,7 +7,6 @@ import torch
 from lib.uilt_module import CurveLoss
 from loader.DataLoader import read_dataframe
 from loader.DataTransformer import lag_list
-from model.Attention_LstmModel import Attention_ResidualLstmModel
 from model.ScalingResidualLstmModel import ScalingResidualLstmModel
 
 # script parameter
