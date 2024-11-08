@@ -43,6 +43,7 @@ num_layers = 4
 output_dim = 1
 
 ### looping for repetitive training
+best_models = []
 best_training_loss = []
 
 best_residual = []
@@ -80,6 +81,7 @@ for _ in range(REPEAT):
     # test
     model.load_state_dict(best_model_state)
 
+    best_models.append(best_model_state)
     best_training_loss.append(best_model_train_loss)
 
     best_fc2.append(model.fc2)
@@ -111,3 +113,10 @@ torch.save(torch.stack(best_lstm_bias_hh0, dim=0), CHECKPOINT_DIR + "/best_lstm_
 torch.save(torch.stack(best_lstm_lag, dim=0), CHECKPOINT_DIR + "/best_lstm_lag.pt")
 
 np.save(CHECKPOINT_DIR + '/best_train_loss.npy', np.array(best_training_loss))
+
+if not os.path.exists(CHECKPOINT_DIR + '/checkpoints'):
+    os.mkdir(CHECKPOINT_DIR + '/checkpoints')
+
+for i in range(len(best_models)):
+    model_checkpoint_path = CHECKPOINT_DIR + '/checkpoints/model_' + '{:02d}'.format(i) + '.chk'
+    torch.save(best_models[i], model_checkpoint_path)
