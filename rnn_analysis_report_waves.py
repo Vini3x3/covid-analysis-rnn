@@ -20,6 +20,7 @@ def get_file_path(wave, filename):
     analysis_on_covid_dir = os.path.join(project_dir, 'GitHub', 'analysis-on-covid')
     return analysis_on_covid_dir + 'checkpoint_wave' + str(wave) + '/' + filename
 
+
 # load from checkpoints
 best_train_loss = np.load(get_file_path(WAVE, 'best_train_loss.npy'))
 best_train_loss = np.sort(best_train_loss)
@@ -37,7 +38,6 @@ best_lstm_weight_hh0 = torch.load(get_file_path(WAVE, 'best_lstm_weight_hh0.pt')
 best_lstm_bias_ih0 = torch.load(get_file_path(WAVE, 'best_lstm_bias_ih0.pt'))
 best_lstm_bias_hh0 = torch.load(get_file_path(WAVE, 'best_lstm_bias_hh0.pt'))
 
-
 # get target models
 ### get models with min training loss below 25th percentile
 threshold = np.percentile(best_train_loss, 25)
@@ -51,8 +51,6 @@ for i in indices:
 indices = filtered_indices
 print("%d models are selected" % len(indices))
 
-
-
 # columns
 dataframe_headers = list(read_dataframe('all').columns)[1:]
 
@@ -61,7 +59,7 @@ print("beyond the first layer, all the input and hidden are 64*64, so we cannot 
 print("we only focus on models with minimal training loss below 25th quantile")
 print()
 
-layer_0_input_var_abs_weight_above_median = best_lstm_weight_ih0[indices][:, 0:64, :].abs().mean(dim=0).mean(
+layer_0_input_var_abs_weight_above_median = best_lstm_weight_ih0[indices][:, 64 * 0:64 * 1, :].abs().mean(dim=0).mean(
     dim=0).tolist()
 print("layer 0's input gate's weight for each variable for best_train_loss")
 print(create_pd_top(dataframe_headers, layer_0_input_var_abs_weight_above_median))
