@@ -21,6 +21,15 @@ def get_file_path(wave, filename):
     return analysis_on_covid_dir + 'checkpoint_wave' + str(wave) + '/' + filename
 
 
+def get_dataframe_weights(feature_names, weight):
+    df_abs = create_pd_top(feature_names, weight.abs().mean(dim=0).mean(dim=0).tolist())
+    selected_indices = list(df_abs.index)
+    mean_weight = weight[:, :, selected_indices].mean(dim=0).mean(dim=0).tolist()
+    df_mean = create_pd_top([feature_names[_] for _ in selected_indices], mean_weight)
+    return pd.merge(df_abs, df_mean, on='name').rename(
+        columns={'data_x': 'mean abs', 'data_y': 'mean'})
+
+
 # load from checkpoints
 best_train_loss = np.load(get_file_path(WAVE, 'best_train_loss.npy'))
 best_train_loss = np.sort(best_train_loss)
@@ -59,30 +68,30 @@ print("beyond the first layer, all the input and hidden are 64*64, so we cannot 
 print("we only focus on models with minimal training loss below 25th quantile")
 print()
 
-layer_0_input_var_abs_weight_above_median = best_lstm_weight_ih0[indices][:, 64 * 0:64 * 1, :].abs().mean(dim=0).mean(
-    dim=0).tolist()
-print("layer 0's input gate's weight for each variable for best_train_loss")
-print(create_pd_top(dataframe_headers, layer_0_input_var_abs_weight_above_median))
-print("this suggests the above variables' input are important prediction ")
+print("layer 0's input gate's important weight")
+# print(get_dataframe_weights(dataframe_headers, best_lstm_weight_ih0[indices][:, 64 * 0:64 * 1, :]))
+print(create_pd_top(dataframe_headers, best_lstm_weight_ih0[indices][:, 64 * 0:64 * 1, :].mean(dim=0).mean(dim=0).tolist()))
 print()
 
-layer_0_forget_var_abs_weight_above_median = best_lstm_weight_ih0[indices][:, 64 * 1:64 * 2, :].abs().mean(dim=0).mean(
-    dim=0).tolist()
-print("layer 0's forget gate's weight for each variable for best_train_loss")
-print(create_pd_top(dataframe_headers, layer_0_forget_var_abs_weight_above_median))
+print("layer 0's forget gate's important weight")
+# print(get_dataframe_weights(dataframe_headers, best_lstm_weight_ih0[indices][:, 64 * 1:64 * 2, :]))
+print(create_pd_top(dataframe_headers, best_lstm_weight_ih0[indices][:, 64 * 1:64 * 2, :].mean(dim=0).mean(dim=0).tolist()))
+print()
+
 print("this suggests the above variables' input are important prediction ")
 print()
 
 print("### Residual")
-avg_residual_input_weight_abs_sum = best_residual_weight[indices].abs().mean(dim=0).squeeze().tolist()
 print("residual layer with higher weight abs sum")
-print(create_pd_top(dataframe_headers, avg_residual_input_weight_abs_sum))
+print(get_dataframe_weights(dataframe_headers, best_residual_weight[indices]))
 print()
 
 print("### FC2 - weighting for lstm layers to residual")
 avg_fc2_input_weight_direction = best_fc2_weight[indices].mean(dim=0).squeeze().tolist()
-print(avg_fc2_input_weight_direction)
 print("left is LSTM model, and right is Residual network")
+print(avg_fc2_input_weight_direction)
+print("lstm model importance to lag 1 residual network")
+print("%.2f : 1" % (avg_fc2_input_weight_direction[0] / avg_fc2_input_weight_direction[1]))
 print()
 
 print("### Lag - weighting for lag being important")
