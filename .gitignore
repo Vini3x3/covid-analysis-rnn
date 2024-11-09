@@ -163,9 +163,7 @@ cython_debug/
 
 .idea/
 data/
-/checkpoint/*.*
-/checkpoint_all/*.*
-/checkpoint_wave1/*.*
-/checkpoint_wave2/*.*
-/checkpoint_wave3/*.*
-/checkpoint_wave4/*.*
+*.pt
+*.npy
+*.chk
+*.zip
