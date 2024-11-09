@@ -18,4 +18,4 @@ class RandomForestLstmModel(nn.Module):
             model_results.append(model(x))
         model_results = torch.stack([_ for _ in model_results], dim=0)
         weighted_model_results = [model_results[i] * self.weightings[i] for i in range(len(self.models))]
-        return torch.stack(weighted_model_results, dim=0).mean(dim=0)
+        return torch.stack(weighted_model_results, dim=0).sum(dim=0)
