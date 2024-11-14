@@ -15,7 +15,9 @@ WAVE = 4
 REPEAT = 100
 
 # prepare data
-sequence = read_dataframe('all').to_numpy()
+sequence = read_dataframe('all')
+sequence = (sequence - sequence.mean()) / sequence.std()
+sequence = sequence.to_numpy()
 # sequence = read_dataframe('count').to_numpy()
 y_var = np.var(sequence[:, -1])
 shifted_sequence = lag_list(sequence, LAG + 1)  # shift into delayed sequences
