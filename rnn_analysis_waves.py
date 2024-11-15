@@ -2,6 +2,7 @@ import copy
 import os
 
 import numpy as np
+import pandas as pd
 import torch
 
 from lib.uilt_module import CurveLoss
@@ -14,12 +15,44 @@ LAG = 15
 WAVE = 4
 REPEAT = 100
 
+
+def get_file_path(wave, filename):
+    curr_dir = os.getcwd()
+    project_dir = curr_dir.split('GitHub')[0]
+    analysis_on_covid_dir = os.path.join(project_dir, 'GitHub', 'analysis-on-covid')
+    return analysis_on_covid_dir + 'checkpoint_wave' + str(wave) + '/' + filename
+    # return 'checkpoint_wave' + str(wave) + '/' + filename
+
+
+def get_wave_period(wave: int):
+    if wave == 1:
+        return 52, 103
+    elif wave == 2:
+        return 160, 280
+    elif wave == 3:
+        return 280, 505
+    elif wave == 4:
+        return 757, 871
+
+
+def std_column(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    if (df[column_name] == 0).all():
+        return df[column_name]
+    return (df[column_name] - df[column_name].mean()) / df[column_name].std()
+
+
+print("WAVE %d" % WAVE)
+
 # prepare data
+wave_start, wave_end = get_wave_period(WAVE)
+
 sequence = read_dataframe('all')
-sequence = (sequence - sequence.mean()) / sequence.std()
-sequence = sequence.to_numpy()
-# sequence = read_dataframe('count').to_numpy()
-y_var = np.var(sequence[:, -1])
+sequence = sequence[wave_start - LAG: wave_end]
+
+numeric_columns = ['avg_temp', 'avg_humid', 'sum', 'count']
+for _ in numeric_columns:
+    sequence.loc[:, _] = std_column(sequence, _)
+
 shifted_sequence = lag_list(sequence, LAG + 1)  # shift into delayed sequences
 
 x_train = shifted_sequence[:, :-1, 1:]  # for each delayed sequence, take all elements except last element
@@ -27,16 +60,7 @@ y_train = shifted_sequence[:, -1, -1]  # for each delayed sequence, only take th
 y_train = y_train.reshape(-1, 1)
 
 x_train = torch.from_numpy(x_train.astype('float64')).type(torch.Tensor)  # convert to tensor
-y_train = torch.from_numpy(y_train.astype('int32')).type(torch.Tensor)  # convert to tensor
-
-if WAVE == 1:
-    x_train, y_train = x_train[52 - LAG:103 - LAG], y_train[52 - LAG:103 - LAG]
-if WAVE == 2:
-    x_train, y_train = x_train[160 - LAG:280 - LAG], y_train[160 - LAG:280 - LAG]
-elif WAVE == 3:
-    x_train, y_train = x_train[280 - LAG:505 - LAG], y_train[280 - LAG:505 - LAG]
-elif WAVE == 4:
-    x_train, y_train = x_train[757 - LAG:871 - LAG], y_train[757 - LAG:871 - LAG]
+y_train = torch.from_numpy(y_train.astype('float64')).type(torch.Tensor)  # convert to tensor
 
 # build model
 input_dim = x_train.shape[-1]
@@ -75,7 +99,7 @@ for _ in range(REPEAT):
             best_model_state = copy.deepcopy(model.state_dict())
             best_model_train_loss = loss.item()
         if epoch % 100 == 0:
-            print("Epoch: %d | MSE: %.2E | RRSE: %.2E" % (epoch, loss.item(), np.sqrt(loss.item() / y_var)))
+            print("Epoch: %d | LOSS: %.2E" % (epoch, loss.item()))
         optimiser.zero_grad()
         loss.backward()
         optimiser.step()
@@ -97,28 +121,25 @@ for _ in range(REPEAT):
     best_lstm_lag.append(model.scaling.lag_importance.data)
 
 ### save files
-CHECKPOINT_DIR = 'checkpoint_wave' + str(WAVE)
-if not os.path.exists(CHECKPOINT_DIR):
-    os.mkdir(CHECKPOINT_DIR)
 
-torch.save(torch.stack([_.bias.data for _ in best_fc2], dim=0), CHECKPOINT_DIR + "/best_fc2_bias.pt")
-torch.save(torch.stack([_.weight.data for _ in best_fc2], dim=0), CHECKPOINT_DIR + "/best_fc2_weight.pt")
+torch.save(torch.stack([_.bias.data for _ in best_fc2], dim=0), get_file_path(WAVE, "best_fc2_bias.pt"))
+torch.save(torch.stack([_.weight.data for _ in best_fc2], dim=0), get_file_path(WAVE, "best_fc2_weight.pt"))
 
-torch.save(torch.stack([_.bias.data for _ in best_residual], dim=0), CHECKPOINT_DIR + "/best_residual_bias.pt")
-torch.save(torch.stack([_.weight.data for _ in best_residual], dim=0), CHECKPOINT_DIR + "/best_residual_weight.pt")
+torch.save(torch.stack([_.bias.data for _ in best_residual], dim=0), get_file_path(WAVE, "best_residual_bias.pt"))
+torch.save(torch.stack([_.weight.data for _ in best_residual], dim=0), get_file_path(WAVE, "best_residual_weight.pt"))
 
-torch.save(torch.stack(best_lstm_weight_ih0, dim=0), CHECKPOINT_DIR + "/best_lstm_weight_ih0.pt")
-torch.save(torch.stack(best_lstm_weight_hh0, dim=0), CHECKPOINT_DIR + "/best_lstm_weight_hh0.pt")
-torch.save(torch.stack(best_lstm_bias_ih0, dim=0), CHECKPOINT_DIR + "/best_lstm_bias_ih0.pt")
-torch.save(torch.stack(best_lstm_bias_hh0, dim=0), CHECKPOINT_DIR + "/best_lstm_bias_hh0.pt")
+torch.save(torch.stack(best_lstm_weight_ih0, dim=0), get_file_path(WAVE, "best_lstm_weight_ih0.pt"))
+torch.save(torch.stack(best_lstm_weight_hh0, dim=0), get_file_path(WAVE, "best_lstm_weight_hh0.pt"))
+torch.save(torch.stack(best_lstm_bias_ih0, dim=0), get_file_path(WAVE, "best_lstm_bias_ih0.pt"))
+torch.save(torch.stack(best_lstm_bias_hh0, dim=0), get_file_path(WAVE, "best_lstm_bias_hh0.pt"))
 
-torch.save(torch.stack(best_lstm_lag, dim=0), CHECKPOINT_DIR + "/best_lstm_lag.pt")
+torch.save(torch.stack(best_lstm_lag, dim=0), get_file_path(WAVE, "best_lstm_lag.pt"))
 
-np.save(CHECKPOINT_DIR + '/best_train_loss.npy', np.array(best_training_loss))
+np.save(get_file_path(WAVE, 'best_train_loss.npy'), np.array(best_training_loss))
 
-if not os.path.exists(CHECKPOINT_DIR + '/checkpoints'):
-    os.mkdir(CHECKPOINT_DIR + '/checkpoints')
+if not os.path.exists(get_file_path(WAVE, 'checkpoints')):
+    os.mkdir(get_file_path(WAVE, 'checkpoints'))
 
 for i in range(len(best_models)):
-    model_checkpoint_path = CHECKPOINT_DIR + '/checkpoints/model_' + '{:02d}'.format(i) + '.chk'
+    model_checkpoint_path = get_file_path(WAVE, 'checkpoints/model_' + '{:02d}'.format(i) + '.chk')
     torch.save(best_models[i], model_checkpoint_path)

@@ -15,6 +15,7 @@ def get_file_path(wave, filename):
     project_dir = curr_dir.split('GitHub')[0]
     analysis_on_covid_dir = os.path.join(project_dir, 'GitHub', 'analysis-on-covid')
     return analysis_on_covid_dir + 'checkpoint_wave' + str(wave) + '/' + filename
+    # return 'checkpoint_wave' + str(wave) + '/' + filename
 
 
 LAG = 15
@@ -52,7 +53,7 @@ output_dim = 1
 LAG = 15
 
 models = []
-for i in range(100):
+for i in range(REPEAT):
     model = ScalingResidualLstmModel(input_dim, hidden_dim, num_layers, output_dim, LAG)
     model_path: str = get_file_path(WAVE, 'checkpoints/model_{:02d}.chk'.format(i))
     model.load_state_dict(torch.load(model_path))

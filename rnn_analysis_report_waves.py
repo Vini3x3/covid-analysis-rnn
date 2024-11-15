@@ -29,6 +29,8 @@ def get_dataframe_weights(feature_names, weight):
     return pd.merge(df_abs, df_mean, on='name').rename(
         columns={'data_x': 'mean abs', 'data_y': 'mean'})
 
+print("REPORT FOR WAVE %d" % WAVE)
+print()
 
 # load from checkpoints
 best_train_loss = np.load(get_file_path(WAVE, 'best_train_loss.npy'))
